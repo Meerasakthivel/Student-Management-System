@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎓 Student Management System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Student Management System</h1>
+
+    <div class="form-container">
+      <input type="text" id="name" placeholder="Student Name" />
+      <input type="number" id="age" placeholder="Age" />
+      <input type="text" id="grade" placeholder="Grade" />
+      <input type="text" id="section" placeholder="Section (A/B/C....)" />
+      <input type="text" id="department" placeholder="Department (CS/Math...)" />
+      <button onclick="addStudent()">➕ Add Student</button>
+    </div>
+
+    <input
+      type="text"
+      id="search"
+      placeholder="🔍 Search by name..."
+      onkeyup="searchStudent()"
+    />
+    <button class="export-btn" onclick="exportToCSV()">📤 Export to CSV</button>
+
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Grade</th>
+          <th>Section</th>
+          <th>Department</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
