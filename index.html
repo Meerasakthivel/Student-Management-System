@@ -1,48 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎓 Student Management System</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="StudentHub Advanced Student Management System">
+  <title>StudentHub | Advanced Student Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>📚 Student Management System</h1>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><strong>StudentHub</strong><span>Advanced Management System</span></div>
+      </div>
+      <h1>Welcome back</h1>
+      <p class="muted">Sign in to continue to your portal.</p>
 
-    <div class="form-container">
-      <input type="text" id="name" placeholder="Student Name" />
-      <input type="number" id="age" placeholder="Age" />
-      <input type="text" id="grade" placeholder="Grade" />
-      <input type="text" id="section" placeholder="Section (A/B/C....)" />
-      <input type="text" id="department" placeholder="Department (CS/Math...)" />
-      <button onclick="addStudent()">➕ Add Student</button>
+      <form id="loginForm">
+        <label>Email / Username</label>
+        <input id="loginUser" required placeholder="admin@school.com">
+        <label>Password</label>
+        <input id="loginPassword" type="password" required placeholder="••••••••">
+        <label>Login as</label>
+        <select id="loginRole">
+          <option value="admin">Admin</option>
+          <option value="teacher">Teacher</option>
+          <option value="parent">Parent</option>
+        </select>
+        <button class="btn primary full" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+      </form>
+
+      <div class="demo-box">
+        <strong>Demo accounts</strong>
+        <div>Admin: <b>admin@school.com</b> / <b>admin123</b></div>
+        <div>Teacher: <b>teacher@school.com</b> / <b>teacher123</b></div>
+        <div>Parent: <b>parent@school.com</b> / <b>parent123</b></div>
+      </div>
+      <p id="loginError" class="error-text"></p>
     </div>
-
-    <input
-      type="text"
-      id="search"
-      placeholder="🔍 Search by name..."
-      onkeyup="searchStudent()"
-    />
-    <button class="export-btn" onclick="exportToCSV()">📤 Export to CSV</button>
-
-
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Grade</th>
-          <th>Section</th>
-          <th>Department</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="studentTableBody"></tbody>
-    </table>
   </div>
 
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><strong>StudentHub</strong><span>Management System</span></div>
+      </div>
+
+      <div class="user-mini">
+        <div id="userAvatar" class="avatar">A</div>
+        <div><strong id="userName">Administrator</strong><small id="userRole">Admin</small></div>
+      </div>
+
+      <nav id="nav">
+        <button class="nav-item active" data-page="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+        <button class="nav-item admin-only" data-page="students"><i class="fa-solid fa-users"></i> Students</button>
+        <button class="nav-item admin-only" data-page="addStudent"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+        <button class="nav-item teacher-only" data-page="attendance"><i class="fa-solid fa-calendar-check"></i> Attendance</button>
+        <button class="nav-item teacher-only" data-page="marks"><i class="fa-solid fa-pen-to-square"></i> Marks</button>
+        <button class="nav-item report-access" data-page="reports"><i class="fa-solid fa-file-lines"></i> Student Reports</button>
+        <button class="nav-item admin-only" data-page="export"><i class="fa-solid fa-file-export"></i> Export Center</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button id="themeBtn" class="nav-item"><i class="fa-solid fa-moon"></i> Theme</button>
+        <button id="logoutBtn" class="nav-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">StudentHub Portal</p>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle" class="muted">Manage students, attendance, marks and reports.</p>
+        </div>
+        <div class="top-actions">
+          <span id="dateNow" class="date-pill"></span>
+          <button id="mobileMenu" class="icon-btn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+      </header>
+
+      <section id="dashboardPage" class="page">
+        <div class="stats-grid">
+          <article class="stat"><div class="stat-icon blue"><i class="fa-solid fa-users"></i></div><div><span>Total Students</span><strong id="statStudents">0</strong></div></article>
+          <article class="stat"><div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div><div><span>Attendance Rate</span><strong id="statAttendance">0%</strong></div></article>
+          <article class="stat"><div class="stat-icon purple"><i class="fa-solid fa-building-columns"></i></div><div><span>Departments</span><strong id="statDepartments">0</strong></div></article>
+          <article class="stat"><div class="stat-icon orange"><i class="fa-solid fa-chart-line"></i></div><div><span>Average Mark</span><strong id="statMarks">0%</strong></div></article>
+        </div>
+
+        <div class="grid-2">
+          <section class="card"><div class="card-title"><div><p class="eyebrow">Performance</p><h2>Marks Overview</h2></div></div><canvas id="marksChart"></canvas></section>
+          <section class="card"><div class="card-title"><div><p class="eyebrow">Attendance</p><h2>Attendance Overview</h2></div></div><canvas id="attendanceChart"></canvas></section>
+        </div>
+
+        <section class="card">
+          <div class="card-title"><div><p class="eyebrow">Activity</p><h2>Recent Student Records</h2></div><button class="btn secondary" data-go="students">View Students</button></div>
+          <div id="recentStudents" class="mini-table"></div>
+        </section>
+      </section>
+
+      <section id="studentsPage" class="page hidden">
+        <section class="card">
+          <div class="card-title"><div><p class="eyebrow">Directory</p><h2>All Students</h2></div><button class="btn success" id="exportStudentsBtn"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
+          <div class="toolbar"><input id="studentSearch" placeholder="Search by name, ID, department..."><select id="studentDeptFilter"><option value="all">All Departments</option></select></div>
+          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Age</th><th>Section</th><th>Department</th><th>Attendance</th><th>Average</th><th>Actions</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="addStudentPage" class="page hidden">
+        <section class="card">
+          <div class="card-title"><div><p class="eyebrow">Administration</p><h2 id="studentFormTitle">Add New Student</h2></div></div>
+          <form id="studentForm" class="form-grid">
+            <input type="hidden" id="editStudentId">
+            <div><label>Full Name</label><input id="studentName" required placeholder="e.g. Sarah Johnson"></div>
+            <div><label>Age</label><input id="studentAge" type="number" min="5" max="100" required></div>
+            <div><label>Section</label><select id="studentSection" required><option value="">Select</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+            <div><label>Department</label><select id="studentDepartment" required><option value="">Select</option><option>Computer Science</option><option>Information Technology</option><option>ECE</option><option>EEE</option><option>ADS</option></select></div>
+            <div><label>Parent Name</label><input id="parentName" required placeholder="Parent / Guardian"></div>
+            <div><label>Parent Email</label><input id="parentEmail" type="email" required placeholder="parent@email.com"></div>
+            <div class="full-row"><button class="btn primary" type="submit"><i class="fa-solid fa-user-plus"></i> <span id="studentSubmitText">Add Student</span></button><button type="button" id="cancelStudentEdit" class="btn secondary hidden">Cancel Edit</button></div>
+          </form>
+        </section>
+      </section>
+
+      <section id="attendancePage" class="page hidden">
+        <section class="card">
+          <div class="card-title"><div><p class="eyebrow">Teacher Portal</p><h2>Record Attendance</h2></div><div class="date-control"><label>Date</label><input id="attendanceDate" type="date"></div></div>
+          <div class="toolbar"><select id="attendanceSectionFilter"><option value="all">All Sections</option><option>A</option><option>B</option><option>C</option><option>D</option></select><button id="markAllPresent" class="btn success">Mark All Present</button><button id="saveAttendance" class="btn primary">Save Attendance</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Department</th><th>Status</th></tr></thead><tbody id="attendanceBody"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="marksPage" class="page hidden">
+        <section class="card">
+          <div class="card-title"><div><p class="eyebrow">Teacher Portal</p><h2>Enter Examination Marks</h2></div><select id="examSelect"><option value="Midterm">Midterm</option><option value="Final">Final</option><option value="Unit Test">Unit Test</option></select></div>
+          <div class="toolbar"><select id="marksSubject"><option>Mathematics</option><option>Programming</option><option>Database</option><option>Networking</option><option>English</option></select><button id="saveMarks" class="btn primary">Save Marks</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Subject</th><th>Marks / 100</th><th>Grade</th></tr></thead><tbody id="marksBody"></tbody></table></div>
+        </section>
+      </section>
+
+      <section id="reportsPage" class="page hidden">
+        <section class="card report-search">
+          <div><p class="eyebrow">Parent / Admin</p><h2>Student Report</h2><p class="muted">Select a student to view attendance, marks and academic summary.</p></div>
+          <select id="reportStudentSelect"></select>
+        </section>
+        <div id="reportContent"></div>
+      </section>
+
+      <section id="exportPage" class="page hidden">
+        <section class="card">
+          <div class="card-title"><div><p class="eyebrow">Administration</p><h2>Export Center</h2><p class="muted">Download complete records for backup or submission.</p></div></div>
+          <div class="export-grid">
+            <button class="export-card" id="exportAllBtn"><i class="fa-solid fa-database"></i><strong>Full Database</strong><span>Students + attendance + marks JSON</span></button>
+            <button class="export-card" id="exportReportBtn"><i class="fa-solid fa-file-csv"></i><strong>Academic CSV</strong><span>Student performance report</span></button>
+            <button class="export-card" id="printReportBtn"><i class="fa-solid fa-print"></i><strong>Print Report</strong><span>Print the selected student report</span></button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
   <script src="script.js"></script>
 </body>
 </html>
